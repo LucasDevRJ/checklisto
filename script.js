@@ -9,6 +9,7 @@ const mensagemVazia = document.getElementById('mensagem-vazia');
 const contadorTotal = document.getElementById('contador-total');
 const contadorConcluidas = document.getElementById('contador-concluidas');
 const botaoSom = document.getElementById('botao-som');
+const botaoAmbiente = document.getElementById('botao-ambiente');
 
 // ============================================================================
 // 2. ESTADO DA APLICAÇÃO (Onde os dados ficam guardados)
@@ -198,6 +199,20 @@ function atualizarBotaoSom() {
 botaoSom.addEventListener('click', function () {
   alternarSom();
   atualizarBotaoSom();
+});
+
+// Controla o botão de som ambiente (🎵 Foco: Aurora Zen)
+botaoAmbiente.addEventListener('click', function () {
+  const ligado = alternarAmbiente();
+  if (ligado) {
+    botaoAmbiente.textContent = '🎵 Foco: On';
+    botaoAmbiente.classList.remove('mudo');
+    botaoAmbiente.classList.add('ativo-aurora');
+  } else {
+    botaoAmbiente.textContent = '🎵 Foco: Off';
+    botaoAmbiente.classList.add('mudo');
+    botaoAmbiente.classList.remove('ativo-aurora');
+  }
 });
 
 // Inicializa o visual do botão de som e desenha as tarefas na tela
