@@ -1,4 +1,8 @@
-# ✅ CheckListo — Guia do Projeto
+<p align="center">
+  <img src="logo.svg" width="96" height="96" alt="Logo CheckListo">
+</p>
+
+# CheckListo — Guia do Projeto
 
 Bem-vindo(a) ao **CheckListo**! Este projeto foi construído com a tríade fundamental do desenvolvimento web (**HTML, CSS e JavaScript puro**), sem bibliotecas externas, para que você consiga enxergar exatamente como cada peça funciona.
 
@@ -6,7 +10,7 @@ Bem-vindo(a) ao **CheckListo**! Este projeto foi construído com a tríade funda
 
 ## 🗂️ Estrutura dos Arquivos
 
-O projeto está dividido em **3 arquivos principais**, cada um com uma única responsabilidade (um conceito importante chamado *Separação de Responsabilidades*):
+O projeto está dividido em arquivos claros, cada um com uma única responsabilidade (um conceito importante chamado *Separação de Responsabilidades*):
 
 ```text
 checklisto/
@@ -14,6 +18,7 @@ checklisto/
 ├── style.css    → Estilo (Glassmorphism & Aurora)
 ├── script.js    → Comportamento (Lógica de adicionar, concluir e remover)
 ├── sons.js      → Módulo de áudio (Efeitos "Cristal & Zen" via Web Audio API)
+├── logo.svg     → Logo vetorial ("Cristal de Check Aurora") e ícone da aba
 ├── server.js    → Servidor local simples (Node.js) para rodar no navegador
 └── README.md    → Documentação explicativa do projeto
 ```

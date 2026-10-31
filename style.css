@@ -111,7 +111,31 @@ body::after {
   align-items: center;
   justify-content: center;
   position: relative;
-  margin-bottom: 8px;
+  margin-bottom: 10px;
+}
+
+.marca {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.logo-app {
+  width: 48px;
+  height: 48px;
+  filter: drop-shadow(0 4px 12px rgba(56, 189, 248, 0.35));
+  animation: flutuarCristal 4s ease-in-out infinite;
+  transition: transform 0.3s ease, filter 0.3s ease;
+}
+
+.marca:hover .logo-app {
+  transform: scale(1.08) rotate(-4deg);
+  filter: drop-shadow(0 6px 16px rgba(192, 132, 252, 0.6));
+}
+
+@keyframes flutuarCristal {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-4px); }
 }
 
 .cabecalho h1 {
