@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CheckListo — Sua Lista de Tarefas</title>
+  <!-- Conectando o arquivo de estilos (CSS) -->
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main class="container">
+    <header class="cabecalho">
+      <h1>✅ CheckListo</h1>
+      <p class="subtitulo">Da lista para o feito: organize suas atividades do dia</p>
+    </header>
+
+    <!-- Formulário para adicionar uma nova tarefa -->
+    <form id="form-tarefa" class="formulario">
+      <input
+        type="text"
+        id="input-tarefa"
+        placeholder="Digite uma nova atividade..."
+        autocomplete="off"
+        required
+      >
+      <button type="submit" id="botao-adicionar">Adicionar</button>
+    </form>
+
+    <!-- Resumo / Contador de tarefas -->
+    <section class="resumo" aria-label="Resumo das tarefas">
+      <span id="contador-total">Total: 0</span>
+      <span id="contador-concluidas">Concluídas: 0</span>
+    </section>
+
+    <!-- Lista onde as tarefas serão inseridas pelo JavaScript -->
+    <ul id="lista-tarefas" class="lista-tarefas"></ul>
+
+    <!-- Mensagem exibida quando não há nenhuma tarefa -->
+    <p id="mensagem-vazia" class="mensagem-vazia">
+      Nenhuma tarefa por aqui ainda. Adicione sua primeira atividade acima! ✨
+    </p>
+  </main>
+
+  <!-- Conectando o arquivo de lógica (JavaScript) -->
+  <script src="script.js"></script>
+</body>
+</html>
