@@ -11,8 +11,9 @@ O projeto está dividido em **3 arquivos principais**, cada um com uma única re
 ```text
 checklisto/
 ├── index.html   → Estrutura (O esqueleto da página)
-├── style.css    → Estilo (Cores, fontes, tamanhos e posicionamento)
+├── style.css    → Estilo (Glassmorphism & Aurora)
 ├── script.js    → Comportamento (Lógica de adicionar, concluir e remover)
+├── sons.js      → Módulo de áudio (Efeitos "Cristal & Zen" via Web Audio API)
 ├── server.js    → Servidor local simples (Node.js) para rodar no navegador
 └── README.md    → Documentação explicativa do projeto
 ```

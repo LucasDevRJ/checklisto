@@ -1,5 +1,28 @@
 /* ==========================================================================
-   1. CONFIGURAÇÕES GERAIS (Reset básico e fontes)
+   ESTILO: GLASSMORPHISM & AURORA (Vidro Fosco Translúcido)
+   ==========================================================================
+   Conceitos de CSS que você vai encontrar neste arquivo:
+   1. Variáveis CSS (:root) -> Guardam cores para reutilizar facilmente
+   2. Gradientes e Animações (@keyframes) -> Criam o efeito "Aurora" no fundo
+   3. Backdrop Filter (backdrop-filter: blur) -> Desfoca o que está atrás do cartão,
+      criando o efeito real de vidro fosco (Glassmorphism)
+   4. Transparências (rgba) -> Cores com canal "alfa" (opacidade de 0 a 1)
+   ========================================================================== */
+
+:root {
+  --vidro-fundo: rgba(255, 255, 255, 0.12);
+  --vidro-item: rgba(255, 255, 255, 0.08);
+  --vidro-item-hover: rgba(255, 255, 255, 0.15);
+  --vidro-borda: rgba(255, 255, 255, 0.25);
+  --texto-principal: #f8fafc;
+  --texto-secundario: rgba(248, 250, 252, 0.72);
+  --cor-destaque: #38bdf8;
+  --cor-sucesso: #34d399;
+  --cor-perigo: #fb7185;
+}
+
+/* ==========================================================================
+   1. CONFIGURAÇÕES GERAIS E FUNDO AURORA
    ========================================================================== */
 * {
   box-sizing: border-box;
@@ -8,42 +31,126 @@
 }
 
 body {
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background-color: #f0f4f8;
-  color: #1e293b;
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  color: var(--texto-principal);
   min-height: 100vh;
   display: flex;
   justify-content: center;
   align-items: flex-start;
-  padding: 40px 16px;
+  padding: 48px 16px;
+  position: relative;
+  overflow-x: hidden;
+
+  /* Fundo escuro com gradiente colorido suave estilo Aurora Boreal */
+  background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 45%, #0f3443 100%);
+  background-size: 200% 200%;
+  animation: movimentoAurora 15s ease infinite;
+}
+
+/* Luzes coloridas difusas no fundo para destacar o efeito de vidro fosco */
+body::before,
+body::after {
+  content: '';
+  position: fixed;
+  border-radius: 50%;
+  filter: blur(90px);
+  z-index: -1;
+  pointer-events: none;
+}
+
+/* Esfera luminosa roxa/magenta no canto superior esquerdo */
+body::before {
+  width: 380px;
+  height: 380px;
+  background: rgba(168, 85, 247, 0.45);
+  top: -80px;
+  left: calc(50% - 340px);
+}
+
+/* Esfera luminosa ciano/verde-água no canto inferior direito */
+body::after {
+  width: 360px;
+  height: 360px;
+  background: rgba(16, 185, 129, 0.38);
+  bottom: -60px;
+  right: calc(50% - 340px);
+}
+
+@keyframes movimentoAurora {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
 }
 
 /* ==========================================================================
-   2. CARTÃO PRINCIPAL (Container da aplicação)
+   2. CARTÃO PRINCIPAL (Onde aplicamos o Glassmorphism)
    ========================================================================== */
 .container {
-  background-color: #ffffff;
   width: 100%;
-  max-width: 520px;
-  border-radius: 16px;
-  padding: 32px 28px;
-  box-shadow: 0 10px 25px rgba(15, 23, 42, 0.08);
+  max-width: 540px;
+  border-radius: 24px;
+  padding: 36px 30px;
+
+  /* O segredo do efeito Vidro Fosco (Glassmorphism): */
+  background: var(--vidro-fundo);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--vidro-borda);
+  box-shadow:
+    0 25px 50px -12px rgba(0, 0, 0, 0.45),
+    inset 0 1px 1px rgba(255, 255, 255, 0.35);
 }
 
 .cabecalho {
   text-align: center;
-  margin-bottom: 24px;
+  margin-bottom: 28px;
+}
+
+.topo-cabecalho {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  margin-bottom: 8px;
 }
 
 .cabecalho h1 {
-  font-size: 1.75rem;
-  color: #0f172a;
-  margin-bottom: 6px;
+  font-size: 2rem;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  background: linear-gradient(90deg, #ffffff, #7dd3fc, #c084fc);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.botao-som {
+  position: absolute;
+  right: 0;
+  background: rgba(15, 23, 42, 0.35);
+  color: var(--texto-principal);
+  border: 1px solid var(--vidro-borda);
+  border-radius: 999px;
+  padding: 6px 12px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s, border-color 0.2s, transform 0.15s;
+}
+
+.botao-som:hover {
+  background: rgba(255, 255, 255, 0.18);
+  transform: translateY(-1px);
+}
+
+.botao-som.mudo {
+  color: var(--texto-secundario);
+  opacity: 0.7;
 }
 
 .subtitulo {
   font-size: 0.95rem;
-  color: #64748b;
+  color: var(--texto-secundario);
 }
 
 /* ==========================================================================
@@ -51,42 +158,53 @@ body {
    ========================================================================== */
 .formulario {
   display: flex;
-  gap: 10px;
-  margin-bottom: 20px;
+  gap: 12px;
+  margin-bottom: 22px;
 }
 
 #input-tarefa {
   flex: 1;
-  padding: 12px 14px;
+  padding: 13px 16px;
   font-size: 1rem;
-  border: 2px solid #cbd5e1;
-  border-radius: 10px;
+  color: var(--texto-principal);
+  background: rgba(15, 23, 42, 0.35);
+  border: 1px solid var(--vidro-borda);
+  border-radius: 14px;
   outline: none;
-  transition: border-color 0.2s;
+  transition: border-color 0.25s, box-shadow 0.25s, background-color 0.25s;
+}
+
+#input-tarefa::placeholder {
+  color: rgba(248, 250, 252, 0.45);
 }
 
 #input-tarefa:focus {
-  border-color: #3b82f6;
+  background: rgba(15, 23, 42, 0.55);
+  border-color: var(--cor-destaque);
+  box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.25);
 }
 
 #botao-adicionar {
-  background-color: #3b82f6;
-  color: #ffffff;
+  background: linear-gradient(135deg, #38bdf8 0%, #818cf8 100%);
+  color: #0f172a;
   border: none;
-  border-radius: 10px;
-  padding: 12px 20px;
+  border-radius: 14px;
+  padding: 13px 22px;
   font-size: 1rem;
-  font-weight: 600;
+  font-weight: 700;
   cursor: pointer;
-  transition: background-color 0.2s, transform 0.1s;
+  box-shadow: 0 8px 20px -4px rgba(56, 189, 248, 0.45);
+  transition: transform 0.2s, box-shadow 0.2s, filter 0.2s;
 }
 
 #botao-adicionar:hover {
-  background-color: #2563eb;
+  transform: translateY(-2px);
+  box-shadow: 0 12px 24px -4px rgba(56, 189, 248, 0.6);
+  filter: brightness(1.06);
 }
 
 #botao-adicionar:active {
-  transform: scale(0.98);
+  transform: translateY(0);
 }
 
 /* ==========================================================================
@@ -97,11 +215,12 @@ body {
   justify-content: space-between;
   font-size: 0.875rem;
   font-weight: 600;
-  color: #475569;
-  background-color: #f8fafc;
-  padding: 10px 14px;
-  border-radius: 8px;
-  margin-bottom: 16px;
+  color: var(--texto-secundario);
+  background: rgba(15, 23, 42, 0.28);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  padding: 10px 16px;
+  border-radius: 12px;
+  margin-bottom: 18px;
 }
 
 /* ==========================================================================
@@ -111,7 +230,7 @@ body {
   list-style: none;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 12px;
 }
 
 .item-tarefa {
@@ -119,11 +238,17 @@ body {
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  padding: 12px 14px;
-  background-color: #f8fafc;
-  border: 1px solid #e2e8f0;
-  border-radius: 10px;
-  transition: background-color 0.2s, border-color 0.2s;
+  padding: 14px 16px;
+  background: var(--vidro-item);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 14px;
+  transition: transform 0.2s, background-color 0.2s, border-color 0.2s;
+}
+
+.item-tarefa:hover {
+  background: var(--vidro-item-hover);
+  border-color: rgba(255, 255, 255, 0.3);
+  transform: translateY(-1px);
 }
 
 .conteudo-tarefa {
@@ -135,53 +260,56 @@ body {
 }
 
 .checkbox-tarefa {
-  width: 18px;
-  height: 18px;
+  width: 20px;
+  height: 20px;
   cursor: pointer;
-  accent-color: #10b981;
+  accent-color: var(--cor-sucesso);
 }
 
 .texto-tarefa {
   font-size: 1rem;
-  color: #1e293b;
+  color: var(--texto-principal);
   word-break: break-word;
+  transition: color 0.2s;
 }
 
 /* Estilo aplicado quando a tarefa está concluída */
 .item-tarefa.concluida {
-  background-color: #f0fdf4;
-  border-color: #bbf7d0;
+  background: rgba(16, 185, 129, 0.12);
+  border-color: rgba(52, 211, 153, 0.35);
 }
 
 .item-tarefa.concluida .texto-tarefa {
   text-decoration: line-through;
-  color: #64748b;
+  color: rgba(248, 250, 252, 0.5);
 }
 
 /* Botão de remover */
 .botao-remover {
-  background-color: transparent;
-  color: #ef4444;
-  border: 1px solid #fecaca;
-  border-radius: 8px;
-  padding: 6px 10px;
+  background: rgba(244, 63, 94, 0.14);
+  color: #fda4af;
+  border: 1px solid rgba(251, 113, 133, 0.35);
+  border-radius: 10px;
+  padding: 7px 12px;
   font-size: 0.85rem;
   font-weight: 600;
   cursor: pointer;
-  transition: background-color 0.2s, color 0.2s;
+  transition: background-color 0.2s, color 0.2s, border-color 0.2s, transform 0.15s;
 }
 
 .botao-remover:hover {
-  background-color: #ef4444;
-  color: #ffffff;
+  background: var(--cor-perigo);
+  color: #0f172a;
+  border-color: var(--cor-perigo);
+  transform: scale(1.03);
 }
 
 /* Mensagem de lista vazia */
 .mensagem-vazia {
   text-align: center;
-  color: #94a3b8;
+  color: var(--texto-secundario);
   font-size: 0.95rem;
-  padding: 24px 12px;
+  padding: 28px 12px;
 }
 
 .escondido {

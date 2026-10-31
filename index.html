@@ -10,7 +10,12 @@
 <body>
   <main class="container">
     <header class="cabecalho">
-      <h1>✅ CheckListo</h1>
+      <div class="topo-cabecalho">
+        <h1>✅ CheckListo</h1>
+        <button type="button" id="botao-som" class="botao-som" title="Ativar ou desativar efeitos sonoros">
+          🔊 Som
+        </button>
+      </div>
       <p class="subtitulo">Da lista para o feito: organize suas atividades do dia</p>
     </header>
 
@@ -41,7 +46,8 @@
     </p>
   </main>
 
-  <!-- Conectando o arquivo de lógica (JavaScript) -->
+  <!-- Conectando o módulo de efeitos sonoros e o arquivo de lógica principal -->
+  <script src="sons.js"></script>
   <script src="script.js"></script>
 </body>
 </html>

@@ -8,6 +8,7 @@ const listaTarefas = document.getElementById('lista-tarefas');
 const mensagemVazia = document.getElementById('mensagem-vazia');
 const contadorTotal = document.getElementById('contador-total');
 const contadorConcluidas = document.getElementById('contador-concluidas');
+const botaoSom = document.getElementById('botao-som');
 
 // ============================================================================
 // 2. ESTADO DA APLICAÇÃO (Onde os dados ficam guardados)
@@ -33,18 +34,22 @@ function adicionarTarefa(textoDigitado) {
   tarefas.push(novaTarefa);
   salvarTarefas();
   renderizarTarefas();
+  tocarSomAdicionar();
 }
 
 /**
  * Alterna o estado de uma tarefa entre concluída (true) e pendente (false).
  */
 function alternarConclusao(idDaTarefa) {
+  let ficouConcluida = false;
+
   tarefas = tarefas.map(function (tarefa) {
     if (tarefa.id === idDaTarefa) {
+      ficouConcluida = !tarefa.concluida;
       return {
         id: tarefa.id,
         texto: tarefa.texto,
-        concluida: !tarefa.concluida // Inverte o valor atual
+        concluida: ficouConcluida // Inverte o valor atual
       };
     }
     return tarefa;
@@ -52,6 +57,12 @@ function alternarConclusao(idDaTarefa) {
 
   salvarTarefas();
   renderizarTarefas();
+
+  if (ficouConcluida) {
+    tocarSomConcluir();
+  } else {
+    tocarSomDesmarcar();
+  }
 }
 
 /**
@@ -64,6 +75,7 @@ function removerTarefa(idDaTarefa) {
 
   salvarTarefas();
   renderizarTarefas();
+  tocarSomRemover();
 }
 
 // ============================================================================
@@ -172,5 +184,22 @@ formulario.addEventListener('submit', function (evento) {
   }
 });
 
-// Desenha as tarefas na tela assim que a página é aberta
+// Atualiza o texto e estilo do botão de som (🔊 Som / 🔇 Mudo)
+function atualizarBotaoSom() {
+  if (somAtivo) {
+    botaoSom.textContent = '🔊 Som';
+    botaoSom.classList.remove('mudo');
+  } else {
+    botaoSom.textContent = '🔇 Mudo';
+    botaoSom.classList.add('mudo');
+  }
+}
+
+botaoSom.addEventListener('click', function () {
+  alternarSom();
+  atualizarBotaoSom();
+});
+
+// Inicializa o visual do botão de som e desenha as tarefas na tela
+atualizarBotaoSom();
 renderizarTarefas();
