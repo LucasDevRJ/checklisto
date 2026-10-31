@@ -4,6 +4,8 @@
 
 # CheckListo — Guia do Projeto
 
+🌐 **Acesse a aplicação online (GitHub Pages):** [https://lucasdevrj.github.io/checklisto/](https://lucasdevrj.github.io/checklisto/)
+
 Bem-vindo(a) ao **CheckListo**! Este projeto foi construído com a tríade fundamental do desenvolvimento web (**HTML, CSS e JavaScript puro**), sem bibliotecas externas, para que você consiga enxergar exatamente como cada peça funciona.
 
 ---
