@@ -1,28 +1,68 @@
 // ============================================================================
-// MÓDULO DE ÁUDIO: EFEITOS "CRISTAL & ZEN" + MODO FOCO "AURORA ZEN"
+// MÓDULO DE ÁUDIO: EFEITOS "CRISTAL & ZEN" + MÚSICA "CAIXINHA DE MÚSICA / HARPA"
 // ============================================================================
 // Como funciona este arquivo:
-// 1. Efeitos de clique (Cristal & Zen): ondas senoidais curtas com harmônicos.
-// 2. Música Ambiente (Aurora Zen): acordes atmosféricos longos e suaves
-//    passando por um filtro passa-baixa (lowpass) para criar um som aveludado
-//    que ajuda na concentração sem distrair.
+// 1. Efeitos de clique (Cristal & Zen): toques curtos ao interagir com tarefas.
+// 2. Música de Fundo (Caixinha de Música / Kalimbá): notas dedilhadas uma a uma
+//    formando uma melodia suave e nostálgica (estilo Studio Ghibli), sem sons
+//    contínuos de sintetizador.
 // ============================================================================
 
 let contextoAudio = null;
 let somAtivo = carregarPreferenciaSom();
 
-// Variáveis que controlam a música de fundo (Modo Foco)
-let ambienteAtivo = false; // Começa desligado por padrão (boa prática de UX)
-let intervaloAmbiente = null;
-let osciladoresAmbiente = [];
-let indiceAcordeAtual = 0;
+// Variáveis que controlam a Caixinha de Música (Modo Foco)
+let ambienteAtivo = false; // Começa desligado por padrão
+let intervaloMusica = null;
+let passoAtual = 0;
 
-// Progressão de acordes relaxantes (Dó com 9ª -> Fá com 7ªM -> Lá menor 7 -> Sol 6)
-const ACORDES_AURORA = [
-  [130.81, 196.00, 246.94, 293.66], // Cmaj9 (Dó3, Sol3, Si3, Ré4)
-  [174.61, 220.00, 261.63, 329.63], // Fmaj7 (Fá3, Lá3, Dó4, Mi4)
-  [110.00, 164.81, 220.00, 261.63], // Am7   (Lá2, Mi3, Lá3, Dó4)
-  [146.83, 196.00, 246.94, 329.63]  // G6    (Ré3, Sol3, Si3, Mi4)
+// Frequências das notas musicais (em Hz) para facilitar a leitura da partitura
+const NOTAS = {
+  La3: 220.00, Do4: 261.63, Re4: 293.66, Mi4: 329.63, Fa4: 349.23, Sol4: 392.00, La4: 440.00, Si4: 493.88,
+  Do5: 523.25, Re5: 587.33, Mi5: 659.25, Fa5: 698.46, Sol5: 783.99, La5: 880.00
+};
+
+// Melodia dedilhada passo a passo (cada item tem a nota da melodia e, no início do compasso, um bordão suave da harpa)
+const PARTITURA_HARPA = [
+  // Compasso 1 (Dó Maior)
+  { melodia: NOTAS.Mi5, baixo: NOTAS.Do4 },
+  { melodia: NOTAS.Sol4 },
+  { melodia: NOTAS.Do5 },
+  { melodia: NOTAS.Mi5 },
+  { melodia: NOTAS.Sol5, baixo: NOTAS.Mi4 },
+  { melodia: NOTAS.Mi5 },
+  { melodia: NOTAS.Do5 },
+  { melodia: NOTAS.Sol4 },
+
+  // Compasso 2 (Lá menor)
+  { melodia: NOTAS.Mi5, baixo: NOTAS.La3 },
+  { melodia: NOTAS.La4 },
+  { melodia: NOTAS.Do5 },
+  { melodia: NOTAS.Mi5 },
+  { melodia: NOTAS.Re5, baixo: NOTAS.Do4 },
+  { melodia: NOTAS.Do5 },
+  { melodia: NOTAS.La4 },
+  { melodia: NOTAS.Mi4 },
+
+  // Compasso 3 (Fá Maior)
+  { melodia: NOTAS.Do5, baixo: NOTAS.Fa4 },
+  { melodia: NOTAS.Fa4 },
+  { melodia: NOTAS.La4 },
+  { melodia: NOTAS.Do5 },
+  { melodia: NOTAS.Mi5, baixo: NOTAS.La3 },
+  { melodia: NOTAS.Do5 },
+  { melodia: NOTAS.La4 },
+  { melodia: NOTAS.Fa4 },
+
+  // Compasso 4 (Sol Maior preparando retorno suave)
+  { melodia: NOTAS.Re5, baixo: NOTAS.Sol4 },
+  { melodia: NOTAS.Sol4 },
+  { melodia: NOTAS.Si4 },
+  { melodia: NOTAS.Re5 },
+  { melodia: NOTAS.Mi5, baixo: NOTAS.Sol4 },
+  { melodia: NOTAS.Re5 },
+  { melodia: NOTAS.Si4 },
+  { melodia: NOTAS.Sol4 }
 ];
 
 /**
@@ -40,7 +80,7 @@ function obterContextoAudio() {
 }
 
 /**
- * Toca uma nota com timbre de sino de cristal (nota base + brilho harmônico).
+ * Toca uma nota com timbre de sino de cristal (para os efeitos de clique).
  */
 function tocarSinoCristal(frequencia, duracao, atraso = 0, volume = 0.14) {
   if (!somAtivo) return;
@@ -110,82 +150,85 @@ function tocarSomRemover() {
 }
 
 // ============================================================================
-// MÚSICA DE FUNDO: MODO FOCO "AURORA ZEN"
+// MÚSICA DE FUNDO: CAIXINHA DE MÚSICA & HARPA DEDILHADA
 // ============================================================================
 
 /**
- * Toca um acorde atmosférico suave que surge e desaparece lentamente (7 segundos).
+ * Toca uma única nota dedilhada (ataque rápido de harpa/kalimbá e ressonância suave).
  */
-function tocarAcordeAurora() {
-  if (!ambienteAtivo) return;
-
+function tocarNotaDedilhada(frequencia, volume, duracao) {
   const ctx = obterContextoAudio();
   const agora = ctx.currentTime;
-  const duracaoAcorde = 7.2;
-  const notas = ACORDES_AURORA[indiceAcordeAtual];
-  indiceAcordeAtual = (indiceAcordeAtual + 1) % ACORDES_AURORA.length;
 
-  // Filtro passa-baixa para deixar o som bem quente e aveludado
-  const filtroSuave = ctx.createBiquadFilter();
-  filtroSuave.type = 'lowpass';
-  filtroSuave.frequency.setValueAtTime(650, agora);
-  filtroSuave.connect(ctx.destination);
+  // Nota fundamental (aveludada)
+  const osc = ctx.createOscillator();
+  const ganho = ctx.createGain();
 
-  notas.forEach(function (frequencia, indice) {
-    const osc = ctx.createOscillator();
-    const ganho = ctx.createGain();
+  osc.type = 'sine';
+  osc.frequency.setValueAtTime(frequencia, agora);
 
-    // Mistura ondas senoidais e triangulares para um timbre de "Pad" espacial
-    osc.type = indice % 2 === 0 ? 'sine' : 'triangle';
-    osc.frequency.setValueAtTime(frequencia, agora);
+  // Envelope de corda dedilhada (sobe em 0.01s e cai suavemente como harpa)
+  ganho.gain.setValueAtTime(0.0001, agora);
+  ganho.gain.linearRampToValueAtTime(volume, agora + 0.012);
+  ganho.gain.exponentialRampToValueAtTime(volume * 0.25, agora + 0.22);
+  ganho.gain.exponentialRampToValueAtTime(0.0001, agora + duracao);
 
-    // Volume bem suave (0.025 por nota) com entrada e saída lentas (respiração)
-    ganho.gain.setValueAtTime(0.0001, agora);
-    ganho.gain.linearRampToValueAtTime(0.024, agora + 2.8);
-    ganho.gain.exponentialRampToValueAtTime(0.0001, agora + duracaoAcorde);
+  osc.connect(ganho);
+  ganho.connect(ctx.destination);
 
-    osc.connect(ganho);
-    ganho.connect(filtroSuave);
+  osc.start(agora);
+  osc.stop(agora + duracao);
 
-    osc.start(agora);
-    osc.stop(agora + duracaoAcorde);
+  // Toque de brilho de caixinha de música (uma oitava acima, bem curtinho)
+  const oscPonte = ctx.createOscillator();
+  const ganhoPonte = ctx.createGain();
 
-    osciladoresAmbiente.push({ osc: osc, ganho: ganho });
-  });
+  oscPonte.type = 'sine';
+  oscPonte.frequency.setValueAtTime(frequencia * 2, agora);
 
-  // Limpa referências antigas de osciladores que já terminaram
-  osciladoresAmbiente = osciladoresAmbiente.slice(-16);
+  ganhoPonte.gain.setValueAtTime(0.0001, agora);
+  ganhoPonte.gain.linearRampToValueAtTime(volume * 0.18, agora + 0.008);
+  ganhoPonte.gain.exponentialRampToValueAtTime(0.0001, agora + 0.18);
+
+  oscPonte.connect(ganhoPonte);
+  ganhoPonte.connect(ctx.destination);
+
+  oscPonte.start(agora);
+  oscPonte.stop(agora + 0.18);
 }
 
 /**
- * Liga ou desliga o som ambiente "Aurora Zen".
+ * Executa o próximo passo da partitura da Caixinha de Música.
+ */
+function tocarProximoPassoMusica() {
+  if (!ambienteAtivo) return;
+
+  const compasso = PARTITURA_HARPA[passoAtual];
+  passoAtual = (passoAtual + 1) % PARTITURA_HARPA.length;
+
+  if (compasso.melodia) {
+    tocarNotaDedilhada(compasso.melodia, 0.075, 1.35);
+  }
+  if (compasso.baixo) {
+    tocarNotaDedilhada(compasso.baixo, 0.055, 1.80);
+  }
+}
+
+/**
+ * Liga ou desliga a Caixinha de Música / Harpa Dedilhada.
  */
 function alternarAmbiente() {
   ambienteAtivo = !ambienteAtivo;
 
   if (ambienteAtivo) {
-    tocarAcordeAurora();
-    // A cada 5.5 segundos inicia o próximo acorde, criando uma transição contínua
-    intervaloAmbiente = setInterval(tocarAcordeAurora, 5500);
+    passoAtual = 0;
+    tocarProximoPassoMusica();
+    // Dedilha uma nota a cada 380ms (andamento calmo e relaxante)
+    intervaloMusica = setInterval(tocarProximoPassoMusica, 380);
   } else {
-    if (intervaloAmbiente) {
-      clearInterval(intervaloAmbiente);
-      intervaloAmbiente = null;
-    }
-    // Suaviza o desligamento das notas que estiverem soando no momento
-    if (contextoAudio) {
-      const agora = contextoAudio.currentTime;
-      osciladoresAmbiente.forEach(function (item) {
-        try {
-          item.ganho.gain.cancelScheduledValues(agora);
-          item.ganho.gain.setValueAtTime(item.ganho.gain.value, agora);
-          item.ganho.gain.exponentialRampToValueAtTime(0.0001, agora + 0.4);
-          item.osc.stop(agora + 0.45);
-        } catch (e) {
-          // Ignora osciladores que já finalizaram
-        }
-      });
-      osciladoresAmbiente = [];
+    if (intervaloMusica) {
+      clearInterval(intervaloMusica);
+      intervaloMusica = null;
     }
   }
 
